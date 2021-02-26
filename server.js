@@ -46,13 +46,6 @@ app.post('/projectData',(req, res) => {
     data: projectData
   });
 
-  //console.log(projectData)
-  //console.log(projectData);
-  // res.status(200).send({
-  //   sucess: true,
-  //   message: "Data saved successfully",
-  //   data: projectData
-  // });
-  //res.send('POST request to the homepage')
+
 
 });
