@@ -1,7 +1,7 @@
 
 //Create url & api key to connect to openweather api
 const baseurl = 'http://api.openweathermap.org/data/2.5/weather?zip=';
-const apikey = 'af56247f090daf77a20a0a2540c88a74'
+const apikey = 'af56247f090daf77a20a0a2540c88a74&units=imperia'
 
 
 // Create a new date instance dynamically with JS
@@ -56,7 +56,7 @@ const getUserData= async function() {
        
    //Post weather Data to local server
    //console.log("Calling post data!!",data);
-   await postData("http://localhost:8000/projectData", data);
+   await postData("http://localhost:8000/postprojectData", data);
    //const show = await console.log(data);
 
   //Update UI
@@ -91,9 +91,9 @@ const updateUI= async function() {
   let uiData = await getData("http://localhost:8000/projectData");
 
   //Updating the UI
-  dateDiv.innerText = "Date: "+ uiData.date;
-  tempDiv.innerText = "Temprature: "+ uiData.temp;
-  contentDiv.innerText = "Feelings: "+ uiData.content;
+  dateDiv.innerHTML = "Date: "+ uiData.date;
+  tempDiv.innerHTML = "Temprature: "+ uiData.temp;
+  contentDiv.innerHTML = "Feelings: "+ uiData.content;
 }
 
 //Get Data from  local server instance 
