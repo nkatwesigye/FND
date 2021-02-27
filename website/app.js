@@ -1,93 +1,74 @@
 
-//const baseurl = 'http://api.openweathermap.org/data/2.5/forecast?id=524901&appid='
+//Create url & api key to connect to openweather api
 const baseurl = 'http://api.openweathermap.org/data/2.5/weather?zip=';
 const apikey = 'af56247f090daf77a20a0a2540c88a74'
 
-
-//api.openweathermap.org/data/2.5/forecast?id=524901&appid={API key}
-
-//api.openweathermap.org/data/2.5/weather?q=London&appid={API key}
-
-//const urlcomplete = baseurl+apikey
-//console.log("testing logging")
-
-// Async POST
-// const postData = async ( url = '', data = {})=>{
-
-//    const response = await fetch(url, {
-//    method: 'POST', 
-//    credentials: 'same-origin', 
-//    headers: {
-//        'Content-Type': 'application/json',
-//    },
-//    body: JSON.stringify(data), // body data type must match "Content-Type" header        
-//  });
-
-//    try {
-//      const newData = await response.json();
-//      return newData;
-//    }catch(error) {
-//    console.log("error", error);
-//    }
-// };
 
 // Create a new date instance dynamically with JS
 let d = new Date();
 let newDate = d.getMonth()+1 +'.'+ d.getDate()+'.'+ d.getFullYear();
 
-console.log("Getting Month:   " ,d.getMonth)
+//console.log("Getting Month:   " ,d.getMonth)
 
-// Async GET
+// Retrieve Weather Adata from OpenApi
 const retrieveweatherData = async (url='') =>{ 
+try{
  const request = await fetch(url)
- try {
- // Transform into JSON
- const allData = await request.json()
- return allData;
- //console.log(allData);
- 
-      }
- catch(error) {
-   console.log("error", error);
-   // appropriately handle the error
-        }
+ if (request.ok) {
+    const allData = await request.json()
+    return allData;
+      } else {
+        console.log("Incorrect or unsported Zip Code");  
+     }  
+ }catch(error){
+  console.log("error", error);
+ }
+   
 };
 
+
+//Validate Zipcode
+function checkZip(value) {
+  return (/(^\d{5}$)|(^\d{5}-\d{4}$)/).test(value);
+};
+
+//&& checkZip(zip)
+console.log(checkZip(64544))
 //get user input from UI
 const getUserData= async function() {
    const zip = document.getElementById('zip').value;
    const feeling = document.getElementById('feelings').value;
    const urlcomplete = `${baseurl}${zip}&APPID=${apikey}`;
-   if (zip.length === 0 || feelings.length === 0) {
+   if (zip.length === 0 && feelings.length === 0  ) {
      alert("Values not updated!");
      return
    }
-
+  try {
+    //Use user input to make a call to openapi
    const weatherData = await retrieveweatherData(urlcomplete);
    //console.log(weatherData);
-
-   const temp = weatherData.main.temp;
-
+   const temp = await weatherData.main.temp;
    const data = {
      date: newDate,
      temp: temp,
      feeling: feeling,
    }
-   console.log("Calling post data!!",data);
+       
+   //Post weather Data to local server
+   //console.log("Calling post data!!",data);
    await postData("http://localhost:8000/projectData", data);
    //const show = await console.log(data);
 
-   //Update UI
+  //Update UI
   updateUI();
+} catch(error) {
+  return alert("No Weather Data for the Specified ZIP CODE,\
+                \nPlease try a different zip Code");
+     // appropriately handle the error
+         };
 };
 
-// async function fetchMovies() {
-//    const response = await fetch('/movies');
-//    // waits until the request completes...
-//    console.log(response);
-//  }xz`,
- 
- 
+// Function to post data to local server
 async function postData(url,data) {
   const response = await fetch(url, {
     method: 'POST',
@@ -100,11 +81,12 @@ async function postData(url,data) {
   return await response.json(); 
 }
 
+//Function to update local server ui
 const updateUI= async function() {
   const dateDiv = document.getElementById('date');
   const tempDiv = document.getElementById('temp');
   const contentDiv = document.getElementById('content');
-  
+
   //call Get data from our local server
   let uiData = await getData("http://localhost:8000/projectData");
 
@@ -126,20 +108,6 @@ const getData= async function(url) {
   }
  
 }
- //console.log("Showing feelings:  "+content);
-// // TODO-Chain your async functions to post an animal then GET the resulting data
-
-// // TODO-Call the chained function 
-// function postGet(){
-//   postData('/animal',{fav:'lion'})     
-//     .then( function(data){
-//       retrieveData('/all')
-      
-//   })
-    
-// }
-
-// postGet()
 
 const generateBtn = document.querySelector('#generate');
 generateBtn.addEventListener('click', getUserData);
